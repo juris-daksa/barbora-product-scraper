@@ -1,5 +1,5 @@
 import { scrapeProducts } from './scraper.js';
 
-await scrapeProducts();
+scrapeProducts();
 
 export { scrapeProducts };
