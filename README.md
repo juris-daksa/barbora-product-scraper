@@ -1,7 +1,5 @@
 # Barbora Product Scraper
 
-A tool for scraping product information from BARBORA.LV using Puppeteer and Bright Data.
-
 ### Overview
 
 This tool extracts all available products from [BARBORA.LV](https://barbora.lv). It iterates through all categories and automatically handles pagination to ensure all products are captured. The scraped data is then saved to a JSON file. **Note:** A Bright Data scraping browser instance is necessary to run this tool.
