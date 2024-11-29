@@ -1,14 +1,14 @@
 import puppeteer from 'puppeteer-core';
 
 export async function resetSession(brdConfig) {
-    let browser = await puppeteer.connect({
-        browserWSEndpoint: brdConfig
-    });
+  let browser = await puppeteer.connect({
+    browserWSEndpoint: brdConfig
+  });
 
-    let page = await browser.newPage();
-    page.setDefaultNavigationTimeout(2 * 60 * 1000);
+  let page = await browser.newPage();
+  page.setDefaultNavigationTimeout(2 * 60 * 1000);
 
-    return { browser, page };
+  return { browser, page };
 }
 
 export async function extractCategoryLinks(page) {

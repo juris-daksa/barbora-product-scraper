@@ -13,7 +13,7 @@ export async function scrapeProducts() {
   console.log(`\nBrightData config: \"${brdConfig}\"\n`);
 
   try {
-    ({browser, page} = await resetSession( brdConfig));
+    ({ browser, page } = await resetSession(brdConfig));
 
     await page.goto('https://barbora.lv/');
     const categoryLinks = await extractCategoryLinks(page);
@@ -27,7 +27,7 @@ export async function scrapeProducts() {
 
     for (const { href, category } of categoryLinks) {
       const absoluteLink = url.resolve('https://barbora.lv', href);
-      ({page, browser} = await resetSession(brdConfig));
+      ({ browser, page } = await resetSession(brdConfig));
       await page.goto(absoluteLink);
 
       console.log(`\nExtracting from \"${absoluteLink}\"...`);
