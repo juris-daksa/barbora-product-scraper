@@ -9,7 +9,7 @@ This tool extracts all available products from [BARBORA.LV](https://barbora.lv).
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/YourUsername/barbora-product-scraper.git
+   git clone https://github.com/juris-daksa/barbora-product-scraper.git
    cd barbora-product-scraper
 2. Install dependencies:
 
