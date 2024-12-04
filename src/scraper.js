@@ -7,6 +7,20 @@ import { resetSession, extractCategoryLinks, extractProductsFromCategory } from 
 
 dotenv.config();
 
+const CONFIG_FILE = 'category-config.json';
+
+async function loadConfig() {
+  if (fs.existsSync(CONFIG_FILE)) {
+    const configFile = fs.readFileSync(CONFIG_FILE);
+    return JSON.parse(configFile);
+  }
+  return null;
+}
+
+async function saveConfig(config) {
+  fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
+}
+
 export async function scrapeProducts() {
   let browser;
   let page;
@@ -14,6 +28,15 @@ export async function scrapeProducts() {
   console.log(`\nBrightData config: \"${brdConfig}\"\n`);
 
   try {
+    const config = await loadConfig();
+    let selectedCategories;
+
+    if (config && config.selectedCategories) {
+      // Load categories from the configuration file
+      selectedCategories = config.selectedCategories;
+      console.log('Loaded selected categories from config:');
+      selectedCategories.forEach(({ category }) => console.log(`- ${category}`));
+    } else {
       ({ browser, page } = await resetSession(brdConfig));
 
       console.log('Navigating to the page...');
@@ -48,6 +71,10 @@ export async function scrapeProducts() {
       ]);
 
       selectedCategories = response.selectedCategories;
+      // Save the selected categories to the configuration file
+      await saveConfig({ selectedCategories });
+      console.log('Saved selected categories to config.');
+    }
 
     let allProducts = {};
 
