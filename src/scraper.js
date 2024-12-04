@@ -2,6 +2,7 @@ import puppeteer from 'puppeteer-core';
 import fs from 'fs';
 import url from 'url';
 import dotenv from 'dotenv';
+import inquirer from 'inquirer';
 import { resetSession, extractCategoryLinks, extractProductsFromCategory } from './utils.js';
 
 dotenv.config();
@@ -13,19 +14,44 @@ export async function scrapeProducts() {
   console.log(`\nBrightData config: \"${brdConfig}\"\n`);
 
   try {
-    ({ browser, page } = await resetSession(brdConfig));
+      ({ browser, page } = await resetSession(brdConfig));
 
-    await page.goto('https://barbora.lv/');
-    const categoryLinks = await extractCategoryLinks(page);
+      console.log('Navigating to the page...');
+      await page.goto('https://barbora.lv/', { waitUntil: 'networkidle2', timeout: 60000 });
 
-    console.log(`Found ${categoryLinks.length} categories`);
-    categoryLinks.forEach(link => {
-      console.log(`${link.category}:\"${link.href}\"`);
-    });
+      console.log('Waiting for category links...');
+      await page.waitForSelector('a.category-item--title', { timeout: 60000 });
+
+      const categoryLinks = await extractCategoryLinks(page);
+      console.log(`Found ${categoryLinks.length} categories`);
+      categoryLinks.forEach(link => {
+        console.log(`${link.category}: \"${link.href}\"`);
+      });
+
+      // Prompt user to select categories to scrape
+      const response = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          message: 'Select categories to scrape',
+          name: 'selectedCategories',
+          choices: categoryLinks.map(link => ({
+            name: link.category,
+            value: link
+          })),
+          validate: answer => {
+            if (answer.length < 1) {
+              return 'You must choose at least one category.';
+            }
+            return true;
+          }
+        }
+      ]);
+
+      selectedCategories = response.selectedCategories;
 
     let allProducts = {};
 
-    for (const { href, category } of categoryLinks) {
+    for (const { href, category } of selectedCategories) {
       const absoluteLink = url.resolve('https://barbora.lv', href);
       ({ browser, page } = await resetSession(brdConfig));
       await page.goto(absoluteLink);
